@@ -1,0 +1,62 @@
+spring:
+  main:
+    web-application-type: reactive
+
+server:
+  port: 8080
+
+cloud:
+  gateway:
+    routes:
+      - id: naverworks_route
+        uri: https://api.naver.com
+        predicates:
+          - Path=/naverworks/**
+        filters:
+          - RewritePath=/naverworks/(?<segment>.*), /${segment}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+naverworks:
+  url: https://www.worksapis.com/v1.0
+
+bot:
+  privatekey: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC6TbAZanbXk3e7
+    AMZXk/c7ZYmS7gAEyV3JFtbUFM1JghPM7+6GCDT5l127zrZGfkwZ1dZdqZiN8L8Q
+    sP3inzkyzZBtwceI493Q6nnWaweL3wRl4kMZqJ6gvS4hpsORnTkKNRXaysXI011u
+    yL6c5/gH5qyHodeDuN5ndnwEkaF265NYfFZe6H+4p1Erfci+eSVwRT4Xp6FT5f+0
+    bbDUfY8HuozH4h2qbyFlXOwFiGyGIVLSOe4QGFetoqtwqPKg0ovm1m+gBtWWuZmS
+    Bvq44Uv/wkynNgGl+NdGXBfLzWWzFHjbWsBJ0ZN0k/sdpxac+sEmaTZOFHJaev8/
+    Q5O4EdJrAgMBAAECggEAFii1YGCEYCG/JPPzo2kLB/qMwXgjcm5NBGT+Cl2rCSo6
+    lq6XDUQeoO07DeKJVZsiDBSeGafZaFCROTgECpdrozpGCnf49rQ7puSsty8lx6Iw
+    ELo3xu6CZ5X4zbHbIw+zQB6OSebCXZ+eRlYELf99RdtO/Bbo3lb3xRCXsadssAsi
+    gCNlKcXpkbQskmRNVXMT8C6aUStQp84BGkd/eEXSh1E4TcRozoQe1MvCquyIDVgK
+    gqBNeU6AVw4gzriTOkbfbyEYcrSQGPtpfvXJbl08Cb73cEy4zl5CuwXpKimQuUUU
+    efjKca0eK49bjtM9peahC/Zxp2RYfyJfNSppVcw8iQKBgQD+F0Xf/PTOPFcm0kyB
+    VGuhoV0/0x9Ms+Uv65nowv+ZicGg5M9YVGik48Ct1FD283uiQehrzQkGpdJdUkrc
+    fD+AlvJt5PmYFTi2onTFzr8xq7uBvRhrUbr/U6SJ27BmWlKHV65U5aV3JYcNp5jQ
+    Av8/BxffKjUHkVsHJgqmefUMPwKBgQC7tAfAd7kw9NE5RdHy68vaExFKob+9c4v/
+    TAJ1JqHk5wpwPSrKweEiU3s40QzMgjDHTRCkucAECBgJH5paOnGOJx3rmhx8NyIn
+    26jrkwxhoL6I/iTGqzyXopABzPLl9zEWbTN7sr5kV0bB+RE/szqACKx9Awf66VjG
+    GJP63XDe1QKBgFpS6Zr7MAcUOiLpxRqAaRZ251Al+81nccR8KyUsFHJ/Ht7UF8Ud
+    lGlxMPBaNkHjQgLnDPktVNURI1vbQhNo86YBgsKAEB35BUUfMQWUPjEpDCnNj52u
+    2xuiny4Gc4me+BF2oNk7HXviUkUPW+ot9pBwNBM3zMwY5tP+uPB/EBY/AoGBAI2w
+    XXWlKm9RLqp8EPq9kfkBEblzleht040YlHZYfjbrTM7i7W12ovqlZ8vAyleKI0Ye
+    32RpLxAcCADDEWHw4g07a/OQNtZxS+AoiT+ileMQUyPYLGynkCqqtOgXDHgZe72B
+    Gy7SA7R8yVXdLG8YXR2O7p3Dbv+xq6iFnxbsl6otAoGAbwyJRS7IvooZaXWFBpi+
+    BQX+snnsWZPQmtvhyFGnxWnDPtr7QCYKi65dt5bMG48d1+mHMiwt8GtcRiSO7pek
+    N3gN7ribQH9nZKObeHh9P6JkveLp2sGHgeENlVpzym+BjjyUSzbUACMutibYbkwc
+    UoxPfe2dncPS90PFgZTyCRs=
+    -----END PRIVATE KEY-----
+  client-id: 7eWUj0HqbhSzhkPR8URA
+  client-secret: KHsyhhkIzY
+  service-account: qdhxo.serviceaccount@danal2.by-works.com
+  scope: audit audit.read board board.read bot bot.read calendar calendar.read contact contact.read directory directory.read group group.read orgunit orgunit.read user user.read
+  ids:
+    jira: 7996225
+    confluence: 7996226
+    github: 7996227
