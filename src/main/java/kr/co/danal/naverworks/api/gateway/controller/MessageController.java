@@ -5,6 +5,7 @@ import kr.co.danal.naverworks.api.gateway.config.NaverworksConfig;
 import kr.co.danal.naverworks.api.gateway.model.Message;
 import kr.co.danal.naverworks.api.gateway.model.ResponseData;
 import kr.co.danal.naverworks.api.gateway.service.BotService;
+import kr.co.danal.naverworks.api.gateway.service.ChannelService;
 import kr.co.danal.naverworks.api.gateway.service.JWTService;
 import kr.co.danal.naverworks.api.gateway.util.StringUtils;
 import kr.co.danal.naverworks.api.gateway.util.ClientUtils;
@@ -26,6 +27,7 @@ public class MessageController {
 
 	private final JWTService jwtService;
 	private final BotService botService;
+	private final ChannelService channelService;
 	private final ClientUtils clientUtils;
 	private final NaverworksConfig naverworksConfig;
 
@@ -36,8 +38,6 @@ public class MessageController {
 			@PathVariable("userId") String userId,
 			@RequestBody Message message
 	) throws GeneralSecurityException, IOException {
-		log.info(message.toString());
-		log.info("url = {}", naverworksConfig.getUrl() + botService.getBotIdbyPlatform(platform) + "/users/" + userId + "/messages");
 		ResponseData responseData = clientUtils.post(jwtService.getServerToken(), StringUtils.concatThreadSafe(naverworksConfig.getUrl(), "/bots/", botService.getBotIdbyPlatform(platform), "/users/", userId, "/messages"), message);
 		Object data = responseData.getData();
 
@@ -47,15 +47,13 @@ public class MessageController {
 	}
 	
 	//채널 대상 메세지 전송
-	@PostMapping("/{platform}/channels/{channelId}")
+	@PostMapping("/{platform}/channels/{channel}")
 	public ResponseEntity<Object> messageForChannel(
 			@PathVariable("platform") String platform,
-			@PathVariable("channelId") String channelId,
+			@PathVariable("channel") String channel,
 			@RequestBody Message message
 	) throws GeneralSecurityException, IOException {
-		log.info(message.toString());
-		log.info("url = {}", naverworksConfig.getUrl() + botService.getBotIdbyPlatform(platform) + "/channels/" + channelId + "/messages");
-		ResponseData responseData = clientUtils.post(jwtService.getServerToken(), StringUtils.concatThreadSafe(naverworksConfig.getUrl(), "/bots/", botService.getBotIdbyPlatform(platform), "/channels/", channelId, "/messages"), message);
+		ResponseData responseData = clientUtils.post(jwtService.getServerToken(), StringUtils.concatThreadSafe(naverworksConfig.getUrl(), "/bots/", botService.getBotIdbyPlatform(platform), "/channels/", channelService.getChannelIdByChannel(channel), "/messages"), message);
 		Object data = responseData.getData();
 
 		Map<String, Object> dataMap = new ObjectMapper().convertValue(data, Map.class);

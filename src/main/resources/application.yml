@@ -60,3 +60,7 @@ bot:
     jira: 7996225
     confluence: 7996226
     github: 7996227
+
+channels:
+  file:
+    path: channels.json

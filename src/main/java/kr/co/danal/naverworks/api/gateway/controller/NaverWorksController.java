@@ -22,8 +22,8 @@ import java.util.Map;
 @Slf4j
 public class NaverWorksController {
 
-    private final JWTService service;
-    private final ClientUtils utils;
+    private final JWTService jwtService;
+    private final ClientUtils clientUtils;
 
     @GetMapping("/test")
     public String test() {
@@ -34,7 +34,7 @@ public class NaverWorksController {
     @GetMapping("/test2")
     public ResponseEntity<Object> list() throws IOException, GeneralSecurityException {
 
-        ResponseData responseData = utils.get(service.getServerToken(), "https://www.worksapis.com/v1.0/directory/levels");
+        ResponseData responseData = clientUtils.get(jwtService.getServerToken(), "https://www.worksapis.com/v1.0/directory/levels");
         Object data = responseData.getData();
 
         Map<String, Object> dataMap = new ObjectMapper().convertValue(data, Map.class);
