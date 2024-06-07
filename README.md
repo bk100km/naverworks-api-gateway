@@ -8,7 +8,8 @@
 - Naverworks 직급 조회
 - 협업도구 이벤트 발생 시 Bot message
 - Bot 생성/수정 등 관리
+- ChannelId 맵핑
 
 ## Installation and Getting Started
-- 테스트 URL
-  https://ca78-2001-2d8-200e-5abf-d559-9a69-3d68-6785.ngrok-free.app
+- 테스트 URL (ngrok)
+  https://256b-2001-2d8-20a0-b8c9-81b8-41c6-d262-abd.ngrok-free.app
