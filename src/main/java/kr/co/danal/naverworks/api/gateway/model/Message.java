@@ -1,11 +1,15 @@
 package kr.co.danal.naverworks.api.gateway.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Message {
 
 	@JsonProperty("content")
@@ -13,13 +17,14 @@ public class Message {
 
 	@Data
 	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
 	public static class Content {
 		@JsonProperty("type")
 		private String type;
 		@JsonProperty("text")
 		private String text;
 
-		// toString 메서드 재정의
 		@Override
 		public String toString() {
 			return "content {" +
@@ -29,7 +34,6 @@ public class Message {
 		}
 	}
 
-	// toString 메서드 재정의
 	@Override
 	public String toString() {
 		return "Message {" +

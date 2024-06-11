@@ -1,39 +1,60 @@
 package kr.co.danal.naverworks.api.gateway.controller;
 
+import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
 import kr.co.danal.naverworks.api.gateway.service.ChannelService;
+import kr.co.danal.naverworks.api.gateway.service.MessageEventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/channels")
+@RequestMapping("/channels")
 @Slf4j
 public class ChannelsController {
 
     private final ChannelService channelService;
+    private final MessageEventService messageEventService;
 
-    @GetMapping("")
-    public Map<String, String> get() {
-        return channelService.getChannelsReadOnly();
+    @PostMapping("")
+    public Mono<ResponseEntity<String>> handle(@RequestBody MessageEvent messageEvent) {
+        return messageEventService.forwardRequest(messageEvent);
     }
 
-    @RequestMapping(value = {"/add/{channel}", "/update/{channel}"}, method = RequestMethod.POST)
-    public ResponseEntity<Object> add(
+    @PostMapping("/start")
+    public Mono<ResponseEntity<String>> start(@RequestBody MessageEvent messageEvent) {
+        return messageEventService.sendMessage(messageEvent, messageEventService.getStartMessage());
+    }
+
+    @PostMapping("/get")
+    public Mono<ResponseEntity<String>> get(@RequestBody MessageEvent messageEvent) {
+        return messageEventService.sendMessage(messageEvent, channelService.getChannelsReadOnly().toString());
+    }
+
+    @RequestMapping(value = {"/add/{channel}/{channelId}", "/update/{channel}/{channelId}"}, method = RequestMethod.POST)
+    public Mono<ResponseEntity<String>> add(
+            @RequestBody MessageEvent messageEvent,
             @PathVariable String channel,
-            @RequestBody String channelId) throws IOException {
+            @PathVariable String channelId) throws IOException {
         channelService.addOrUpdateChannel(channel, channelId);
-        return new ResponseEntity<Object>(HttpStatus.OK);
+        return messageEventService.sendMessage(messageEvent, "success");
     }
 
-    @DeleteMapping("/delete/{channel}")
-    public ResponseEntity<Object> delete(@PathVariable String channel) throws IOException {
+    @PostMapping("/delete/{channel}")
+    public Mono<ResponseEntity<String>> delete(
+            @RequestBody MessageEvent messageEvent,
+            @PathVariable String channel) throws IOException {
         channelService.removeChannel(channel);
-        return new ResponseEntity<Object>(HttpStatus.OK);
+        return messageEventService.sendMessage(messageEvent, "success");
+    }
+
+    @PostMapping("/error")
+    public Mono<ResponseEntity<String>> error(
+            @RequestBody MessageEvent messageEvent) throws IOException {
+        return messageEventService.sendMessage(messageEvent, "failed");
     }
 }

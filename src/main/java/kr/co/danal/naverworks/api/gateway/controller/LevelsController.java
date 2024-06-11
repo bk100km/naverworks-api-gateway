@@ -26,13 +26,8 @@ public class LevelsController {
 	//직급 목록 조회
 	@GetMapping("")
 	public ResponseEntity<Object> list() throws IOException, GeneralSecurityException  {
-		
 		ResponseData responseData = clientUtils.get(service.getServerToken(), "https://www.worksapis.com/v1.0/directory/levels");
-		Object data = responseData.getData();
-		
-		Map<String, Object> dataMap = new ObjectMapper().convertValue(data, Map.class);
-		
-		
+		Map<String, Object> dataMap = new ObjectMapper().convertValue(responseData.getData(), Map.class);
 		return new ResponseEntity<Object>(dataMap, HttpStatus.OK); 
 	}
 	
@@ -41,12 +36,8 @@ public class LevelsController {
 	public ResponseEntity<Object> get(
 			@PathVariable("levelId") String levelId
 			) throws IOException, GeneralSecurityException {
-		
 		ResponseData responseData = clientUtils.get(service.getServerToken(), "https://www.worksapis.com/v1.0/directory/levels/" + levelId);
-		Object data = responseData.getData();
-		
-		Map<String, Object> dataMap = new ObjectMapper().convertValue(data, Map.class);
-		
+		Map<String, Object> dataMap = new ObjectMapper().convertValue(responseData.getData(), Map.class);
 		return new ResponseEntity<Object>(dataMap, HttpStatus.OK);
 	}
 }

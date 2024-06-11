@@ -5,22 +5,16 @@ spring:
 server:
   port: 8080
 
-cloud:
-  gateway:
-    routes:
-      - id: naverworks_route
-        uri: https://api.naver.com
-        predicates:
-          - Path=/naverworks/**
-        filters:
-          - RewritePath=/naverworks/(?<segment>.*), /${segment}
-
 logging:
   level:
+    root: INFO
+    org.springframework.web: INFO
     org.springframework.cloud.gateway: DEBUG
+    kr.co.danal.naverworks.api.gateway: TRACE
 
-naverworks:
-  url: https://www.worksapis.com/v1.0
+url:
+  base-url: http://localhost:8080
+  naverworks: https://www.worksapis.com/v1.0
 
 bot:
   privatekey: |
@@ -60,7 +54,21 @@ bot:
     jira: 7996225
     confluence: 7996226
     github: 7996227
+    channel: 8076239
 
 channels:
   file:
     path: channels.json
+  message:
+    start: |
+      안녕하세요 채널관리봇입니다 :)
+      수행할 명령어를 입력해주세요.
+      
+      1. 등록된 채널 조회
+       : get
+      2. 채널ID 등록하기
+       : add/{채널명}/{채널ID}
+      3. 등록된 채널ID 수정하기
+       : update/{채널명}/{채널ID}
+      4. 등록된 채널ID 삭제하기
+       : delete/{채널명}

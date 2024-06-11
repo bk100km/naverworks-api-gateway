@@ -17,4 +17,8 @@ public class BotConfig {
     private String serviceAccount;
     private String scope;
     private Map<String, String> ids;
+
+    public String getBotIdbyPlatform(String platform) {
+        return ids.getOrDefault(platform, null);
+    }
 }
