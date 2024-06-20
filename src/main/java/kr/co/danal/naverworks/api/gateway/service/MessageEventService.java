@@ -2,6 +2,7 @@ package kr.co.danal.naverworks.api.gateway.service;
 
 import kr.co.danal.naverworks.api.gateway.model.Message;
 import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
+import kr.co.danal.naverworks.api.gateway.model.ResponseData;
 import kr.co.danal.naverworks.api.gateway.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +23,17 @@ public class MessageEventService {
     @Value("${channels.message.start:please enter}")
     private String startMessage;
 
-    public Mono<ResponseEntity<String>> forwardRequest(MessageEvent messageEvent) {
+    @Value("${channels.message.guide:write guide}")
+    private String guideMessage;
+
+    public Mono<ResponseEntity<ResponseData>> forwardRequest(MessageEvent messageEvent) {
         String uri = getUriByMessageEvent(messageEvent);
 
         return webClient.post()
                 .uri(uri)
                 .body(Mono.just(messageEvent), MessageEvent.class)
                 .retrieve()
-                .toEntity(String.class);
+                .toEntity(ResponseData.class);
     }
 
     public String getUriByMessageEvent(MessageEvent messageEvent) {
@@ -60,6 +64,9 @@ public class MessageEventService {
             case "delete":
                 uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concatThreadSafe("/channels/delete/", channel);
                 break;
+            case "guide":
+                uri = "/channels/guide";
+                break;
         }
         return uri;
     }
@@ -67,7 +74,7 @@ public class MessageEventService {
     public boolean isValidParams(String type, String channel, String channelId) {
         boolean isValid = true;
         switch (type) {
-            case "start", "시작하기", "get":
+            case "start", "시작하기", "get", "guide":
                 break;
             case "add", "update":
                 if (StringUtils.isBlank(channel) ||
@@ -90,7 +97,11 @@ public class MessageEventService {
         return startMessage;
     }
 
-    public Mono<ResponseEntity<String>> sendMessage(MessageEvent messageEvent, String text) {
+    public String getGuideMessage() {
+        return guideMessage;
+    }
+
+    public Mono<ResponseEntity<ResponseData>> sendMessage(MessageEvent messageEvent, String text) {
         String uri = "/message/channel/users/" + messageEvent.getSource().getUserId();
         Message message = Message.builder()
                 .content(Message.Content.builder()
@@ -102,6 +113,6 @@ public class MessageEventService {
                 .uri(uri)
                 .body(Mono.just(message), Message.class)
                 .retrieve()
-                .toEntity(String.class);
+                .toEntity(ResponseData.class);
     }
 }

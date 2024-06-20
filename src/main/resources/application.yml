@@ -10,7 +10,7 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.springframework.cloud.gateway: DEBUG
-    kr.co.danal.naverworks.api.gateway: TRACE
+    kr.co.danal.naverworks.api.gateway: DEBUG
 
 url:
   base-url: http://localhost:8080
@@ -58,7 +58,7 @@ bot:
 
 channels:
   file:
-    path: channels.json
+    path: src/main/resources/channels.json
   message:
     start: |
       안녕하세요 채널관리봇입니다 :)
@@ -72,3 +72,20 @@ channels:
        : update/{채널명}/{채널ID}
       4. 등록된 채널ID 삭제하기
        : delete/{채널명}
+      5. 가이드 보기
+       : guide
+    guide: |
+      1. 등록할 메시지 채널을 클릭하세요. 
+      2. "더보기" -> "채널ID" -> "채널ID 복사"를 클릭하세요.
+      3. 메시지 "새로 만들기" -> "사내 구성원과 대화" -> "Bot" -> "채널관리봇"을 선택하세요.
+      4. "시작하기"를 클릭하고 명령어를 입력하세요. 
+          ex. add/{채널명}/{채널ID}
+      5. 정상적으로 채널이 등록되면, "success" 메시지를 회신해요.
+      6. "http://localhost:8080/message/{platform}/channels/{채널명}"으로 메시지를 발송하세요.
+          * 메시지 형식 참고
+          {
+              "content": {
+                  "type": "text",
+                  "text": "테스트트트트기술전략"
+              }
+          }

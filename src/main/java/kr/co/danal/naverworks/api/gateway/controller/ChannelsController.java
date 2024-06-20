@@ -1,6 +1,8 @@
 package kr.co.danal.naverworks.api.gateway.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
+import kr.co.danal.naverworks.api.gateway.model.ResponseData;
 import kr.co.danal.naverworks.api.gateway.service.ChannelService;
 import kr.co.danal.naverworks.api.gateway.service.MessageEventService;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +23,22 @@ public class ChannelsController {
     private final MessageEventService messageEventService;
 
     @PostMapping("")
-    public Mono<ResponseEntity<String>> handle(@RequestBody MessageEvent messageEvent) {
+    public Mono<ResponseEntity<ResponseData>> handle(@RequestBody MessageEvent messageEvent) {
         return messageEventService.forwardRequest(messageEvent);
     }
 
     @PostMapping("/start")
-    public Mono<ResponseEntity<String>> start(@RequestBody MessageEvent messageEvent) {
+    public Mono<ResponseEntity<ResponseData>> start(@RequestBody MessageEvent messageEvent) {
         return messageEventService.sendMessage(messageEvent, messageEventService.getStartMessage());
     }
 
     @PostMapping("/get")
-    public Mono<ResponseEntity<String>> get(@RequestBody MessageEvent messageEvent) {
-        return messageEventService.sendMessage(messageEvent, channelService.getChannelsReadOnly().toString());
+    public Mono<ResponseEntity<ResponseData>> get(@RequestBody MessageEvent messageEvent) throws JsonProcessingException {
+        return messageEventService.sendMessage(messageEvent, channelService.getChannelsToPrettyJson());
     }
 
     @RequestMapping(value = {"/add/{channel}/{channelId}", "/update/{channel}/{channelId}"}, method = RequestMethod.POST)
-    public Mono<ResponseEntity<String>> add(
+    public Mono<ResponseEntity<ResponseData>> add(
             @RequestBody MessageEvent messageEvent,
             @PathVariable String channel,
             @PathVariable String channelId) throws IOException {
@@ -45,7 +47,7 @@ public class ChannelsController {
     }
 
     @PostMapping("/delete/{channel}")
-    public Mono<ResponseEntity<String>> delete(
+    public Mono<ResponseEntity<ResponseData>> delete(
             @RequestBody MessageEvent messageEvent,
             @PathVariable String channel) throws IOException {
         channelService.removeChannel(channel);
@@ -53,8 +55,13 @@ public class ChannelsController {
     }
 
     @PostMapping("/error")
-    public Mono<ResponseEntity<String>> error(
+    public Mono<ResponseEntity<ResponseData>> error(
             @RequestBody MessageEvent messageEvent) throws IOException {
-        return messageEventService.sendMessage(messageEvent, "failed");
+        return messageEventService.sendMessage(messageEvent, "fail");
+    }
+
+    @PostMapping("/guide")
+    public Mono<ResponseEntity<ResponseData>> guide(@RequestBody MessageEvent messageEvent) {
+        return messageEventService.sendMessage(messageEvent, messageEventService.getGuideMessage());
     }
 }

@@ -1,5 +1,6 @@
 package kr.co.danal.naverworks.api.gateway.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -7,13 +8,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.StringJoiner;
 
 @Slf4j
 @Service
@@ -23,14 +23,12 @@ public class ChannelService {
     private Map<String, String> channels;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${channels.file.path:channels.json}")
+    @Value("${channels.file.path:src/main/resources/channels.json}")
     private String channelsFilePath;
 
     @PostConstruct
     public void loadChannels() throws FileNotFoundException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("channels.json").getFile());
-
+        File file = new File(channelsFilePath);
         if (file.exists()) {
             try {
                 channels = objectMapper.readValue(file, Map.class);
@@ -46,8 +44,13 @@ public class ChannelService {
     @PreDestroy
     public void saveChannels() throws IOException {
         try {
-            objectMapper.writeValue(new File(channelsFilePath), channels);
+            File file = new File(channelsFilePath);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            objectMapper.writeValue(file, channels);
         } catch (IOException e) {
+            log.error("Failed to save channels!", e);
             throw e;
         }
     }
@@ -61,12 +64,15 @@ public class ChannelService {
         saveChannels();
     }
 
-    public void removeChannel(String channelId) {
+    public void removeChannel(String channelId) throws IOException {
         channels.remove(channelId);
+        saveChannels();
     }
 
-    public Map<String, String> getChannelsReadOnly() {
-        return new ConcurrentHashMap<>(channels);
+    public String getChannelsToPrettyJson() throws JsonProcessingException {
+        StringJoiner joiner = new StringJoiner(",\n", "{\n", "\n}");
+        channels.forEach((key, value) -> joiner.add("  \"" + key + "\": \"" + value + "\""));
+        return joiner.toString();
     }
 
     public Map<String, String> getChannels() {

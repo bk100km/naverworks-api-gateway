@@ -1,13 +1,14 @@
 package kr.co.danal.naverworks.api.gateway.service;
 
+import kr.co.danal.naverworks.api.gateway.model.TokenInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Map;
 
 @SpringBootTest
 public class JWTServiceTest {
@@ -59,8 +60,8 @@ public class JWTServiceTest {
 		String serviceAccount = "serviceaccount@mail.workslife.kr";
 		String scope = "audit audit.read board board.read bot bot.read calendar calendar.read contact contact.read directory directory.read file file.read group group.folder group.folder.read group.read mail mail.read orgunit orgunit.read user user.read";
 
-		Map<String, Object> token = jwtService.getServerToken(serverPrivateKey, clientId, clientSecret, serviceAccount, scope);
-		assertThat(token).isNotNull();
+		TokenInfo tokenMap = jwtService.getServerToken(serverPrivateKey, clientId, clientSecret, serviceAccount, scope);
+		assertThat(tokenMap).isNotNull();
 	}
 
 }

@@ -2,13 +2,14 @@ package kr.co.danal.naverworks.api.gateway.service;
 
 import kr.co.danal.naverworks.api.gateway.config.BotConfig;
 import kr.co.danal.naverworks.api.gateway.model.Message;
-import kr.co.danal.naverworks.api.gateway.model.ResponseData;
 import kr.co.danal.naverworks.api.gateway.util.ClientUtils;
 import kr.co.danal.naverworks.api.gateway.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -26,7 +27,7 @@ public class MessageService {
     @Value("${url.naverworks:https://www.worksapis.com/v1.0}")
     private String naverworksUrl;
 
-    public ResponseData sendMessage(String type, String platform, String target, Message message)
+    public Mono<ResponseEntity<Object>> sendMessage(String type, String platform, String target, Message message)
             throws GeneralSecurityException, IOException {
         String token = jwtService.getServerToken();
         String url = "";
