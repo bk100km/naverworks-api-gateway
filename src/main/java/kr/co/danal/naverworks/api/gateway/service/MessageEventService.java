@@ -56,13 +56,13 @@ public class MessageEventService {
                 uri = "/channels/get";
                 break;
             case "add":
-                uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concatThreadSafe("/channels/add/", channel, "/", channelId);
+                uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concat("/channels/add/", channel, "/", channelId);
                 break;
             case "update":
-                uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concatThreadSafe("/channels/update/", channel, "/", channelId);
+                uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concat("/channels/update/", channel, "/", channelId);
                 break;
             case "delete":
-                uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concatThreadSafe("/channels/delete/", channel);
+                uri = kr.co.danal.naverworks.api.gateway.util.StringUtils.concat("/channels/delete/", channel);
                 break;
             case "guide":
                 uri = "/channels/guide";

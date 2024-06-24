@@ -28,15 +28,15 @@ public class ClientUtils {
 	 * @return
 	 */
 	public Mono<ResponseEntity<Object>> get(String accessToken, String uri) {
-		log.info("accessToken={}, uri={}", accessToken, uri);
 		return webClient.get()
 				.uri(uri)
 				.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
 				.retrieve()
 				.onStatus(response -> response.isError(), this::handleErrorResponse)
 				.toEntity(Object.class)
-				.doOnSuccess(content -> log.info("Content={}", content))
-				.doOnError(e -> log.error("Exception={}", e.getMessage(), e))
+				.doOnNext(response -> log.info("\n[WebClient One-line] \nRequest: method=get, uri={}, token={}\nResponse: satus={}, headers={}, body={}",
+						uri, accessToken, response.getStatusCode(), response.getHeaders(), response.getBody()))
+				.doOnError(e -> log.error("[WebClient] Exception={}", e.getMessage(), e))
 				.flatMap(responseEntity -> Mono.just(new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK)));
 	}
 	
@@ -48,7 +48,6 @@ public class ClientUtils {
 	 * @return
 	 */
 	public Mono<ResponseEntity<Object>> post(String accessToken, String uri, Object data) {
-		log.info("accessToken={}, uri={}, data={}", accessToken, uri, data);
 		return webClient.post()
 				.uri(uri)
 				.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -58,8 +57,9 @@ public class ClientUtils {
 				.retrieve()
 				.onStatus(response -> response.isError(), this::handleErrorResponse)
 				.toEntity(Object.class)
-				.doOnSuccess(content -> log.info("Content={}", content))
-				.doOnError(e -> log.error("Exception={}", e.getMessage(), e))
+				.doOnNext(response -> log.info("\n[WebClient One-line] \nRequest: method=post, uri={}, token={}, body={}\nResponse: satus={}, headers={}, body={}",
+						uri, accessToken, data, response.getStatusCode(), response.getHeaders(), response.getBody()))
+				.doOnError(e -> log.error("[WebClient] Exception={}", e.getMessage(), e))
 				.flatMap(responseEntity -> Mono.just(new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK)));
 	}
 
@@ -69,8 +69,7 @@ public class ClientUtils {
 	 * @param params
 	 * @return
 	 */
-	public Mono<String> postByFormUrlencoded(String uri, List<NameValuePair> params) {
-		log.info("uri={}, params={}", uri, params);
+	public Mono<ResponseEntity<Object>> postByFormUrlencoded(String uri, List<NameValuePair> params) {
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 		for (NameValuePair param : params) {
 			formData.add(param.getName(), param.getValue());
@@ -82,9 +81,10 @@ public class ClientUtils {
 				.body(BodyInserters.fromFormData(formData))
 				.retrieve()
 				.onStatus(response -> response.isError(), this::handleErrorResponse)
-				.bodyToMono(String.class)
-				.doOnSuccess(content -> log.info("Content={}", content))
-				.doOnError(e -> log.error("Exception={}", e.getMessage(), e));
+				.toEntity(Object.class)
+				.doOnNext(response -> log.info("\n[WebClient One-line] \nRequest: method=post, uri={}, params={}\nResponse: satus={}, headers={}, body={}",
+						uri, params, response.getStatusCode(), response.getHeaders(), response.getBody()))
+				.doOnError(e -> log.error("[WebClient] Exception={}", e.getMessage(), e));
 	}
 
 	private Mono<? extends Throwable> handleErrorResponse(ClientResponse response) {
@@ -92,11 +92,11 @@ public class ClientUtils {
 				.flatMap(errorMessage -> {
 					HttpStatusCode status = response.statusCode();
 					if (status.is4xxClientError()) {
-						return Mono.error(new RuntimeException("Client Error: " + errorMessage));
+						return Mono.error(new RuntimeException("[WebClient] Client Error: " + errorMessage));
 					} else if (status.is5xxServerError()) {
-						return Mono.error(new RuntimeException("Server Error: " + errorMessage));
+						return Mono.error(new RuntimeException("[WebClient] Server Error: " + errorMessage));
 					} else {
-						return Mono.error(new RuntimeException("Unknown Error: " + errorMessage));
+						return Mono.error(new RuntimeException("[WebClient] Unknown Error: " + errorMessage));
 					}
 				});
 	}

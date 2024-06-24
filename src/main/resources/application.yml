@@ -9,7 +9,7 @@ logging:
   level:
     root: INFO
     org.springframework.web: INFO
-    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway: INFO
     kr.co.danal.naverworks.api.gateway: DEBUG
 
 url:

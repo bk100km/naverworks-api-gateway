@@ -35,11 +35,11 @@ public class MessageService {
 
         switch (type) {
             case "user":
-                url = StringUtils.concatThreadSafe(naverworksUrl, "/bots/", botId, "/users/", target, "/messages");
+                url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/users/", target, "/messages");
                 break;
             case "channel":
                 String channelId = channelService.getChannelIdByChannel(target);
-                url = StringUtils.concatThreadSafe(naverworksUrl, "/bots/", botId, "/channels/", channelId, "/messages");
+                url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/channels/", channelId, "/messages");
                 break;
         }
         return clientUtils.post(token, url, message);

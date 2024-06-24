@@ -121,7 +121,7 @@ public class JWTService {
 		TokenInfo tokenInfo = worksClient.postByFormUrlencoded("https://auth.worksmobile.com/oauth2/v2.0/token", params)
 				.flatMap(content -> {
 					try {
-						return Mono.just(new ObjectMapper().readValue(content, TokenInfo.class));
+						return Mono.just(new ObjectMapper().convertValue(content.getBody(), TokenInfo.class));
 					} catch (Exception e) {
 						log.error("Error processing response", e);
 						return Mono.error(e);
