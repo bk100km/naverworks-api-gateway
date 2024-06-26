@@ -1,17 +1,13 @@
 package kr.co.danal.naverworks.api.gateway.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
-import kr.co.danal.naverworks.api.gateway.model.ResponseData;
 import kr.co.danal.naverworks.api.gateway.service.ChannelService;
-import kr.co.danal.naverworks.api.gateway.service.MessageEventService;
+import kr.co.danal.naverworks.api.gateway.service.ChannelBotService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,48 +16,61 @@ import java.io.IOException;
 public class ChannelsController {
 
     private final ChannelService channelService;
-    private final MessageEventService messageEventService;
+    private final ChannelBotService channelBotService;
 
     @PostMapping("")
-    public Mono<ResponseEntity<ResponseData>> handle(@RequestBody MessageEvent messageEvent) {
-        return messageEventService.forwardRequest(messageEvent);
+    public Mono<ResponseEntity<Object>> handle(
+            @RequestBody MessageEvent messageEvent) {
+        return channelBotService.forwardRequest(messageEvent);
     }
 
     @PostMapping("/start")
-    public Mono<ResponseEntity<ResponseData>> start(@RequestBody MessageEvent messageEvent) {
-        return messageEventService.sendMessage(messageEvent, messageEventService.getStartMessage());
+    public Mono<ResponseEntity<Object>> start(
+            @RequestBody MessageEvent messageEvent) {
+        return channelBotService.sendMessage(messageEvent, channelBotService.getStartMessage());
     }
 
     @PostMapping("/get")
-    public Mono<ResponseEntity<ResponseData>> get(@RequestBody MessageEvent messageEvent) throws JsonProcessingException {
-        return messageEventService.sendMessage(messageEvent, channelService.getChannelsToPrettyJson());
+    public Mono<ResponseEntity<Object>> get(
+            @RequestBody MessageEvent messageEvent) {
+        return channelBotService.sendMessage(messageEvent, channelService.getChannelsToPrettyJson());
     }
 
-    @RequestMapping(value = {"/add/{channel}/{channelId}", "/update/{channel}/{channelId}"}, method = RequestMethod.POST)
-    public Mono<ResponseEntity<ResponseData>> add(
+    @RequestMapping(value = {"/add/{channel}/{channelId}"}, method = RequestMethod.POST)
+    public Mono<ResponseEntity<Object>> add(
             @RequestBody MessageEvent messageEvent,
             @PathVariable String channel,
-            @PathVariable String channelId) throws IOException {
-        channelService.addOrUpdateChannel(channel, channelId);
-        return messageEventService.sendMessage(messageEvent, "success");
+            @PathVariable String channelId) {
+        channelService.addChannel(messageEvent, channel, channelId);
+        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
+    }
+
+    @RequestMapping(value = {"/update/{channel}/{channelId}"}, method = RequestMethod.POST)
+    public Mono<ResponseEntity<Object>> update(
+            @RequestBody MessageEvent messageEvent,
+            @PathVariable String channel,
+            @PathVariable String channelId) {
+        channelService.updateChannel(messageEvent, channel, channelId);
+        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
     }
 
     @PostMapping("/delete/{channel}")
-    public Mono<ResponseEntity<ResponseData>> delete(
+    public Mono<ResponseEntity<Object>> delete(
             @RequestBody MessageEvent messageEvent,
-            @PathVariable String channel) throws IOException {
-        channelService.removeChannel(channel);
-        return messageEventService.sendMessage(messageEvent, "success");
+            @PathVariable String channel) {
+        channelService.removeChannel(messageEvent, channel);
+        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
     }
 
     @PostMapping("/error")
-    public Mono<ResponseEntity<ResponseData>> error(
-            @RequestBody MessageEvent messageEvent) throws IOException {
-        return messageEventService.sendMessage(messageEvent, "fail");
+    public Mono<ResponseEntity<Object>> error(
+            @RequestBody MessageEvent messageEvent) {
+        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
     }
 
     @PostMapping("/guide")
-    public Mono<ResponseEntity<ResponseData>> guide(@RequestBody MessageEvent messageEvent) {
-        return messageEventService.sendMessage(messageEvent, messageEventService.getGuideMessage());
+    public Mono<ResponseEntity<Object>> guide(
+            @RequestBody MessageEvent messageEvent) {
+        return channelBotService.sendMessage(messageEvent, channelBotService.getGuideMessage());
     }
 }

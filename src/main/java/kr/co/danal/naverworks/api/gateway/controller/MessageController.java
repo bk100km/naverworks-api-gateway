@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/message")
@@ -25,7 +22,7 @@ public class MessageController {
 			@PathVariable("platform") String platform,
 			@PathVariable("userId") String userId,
 			@RequestBody Message message
-	) throws GeneralSecurityException, IOException {
+	) {
 		return messageService.sendMessage("user", platform, userId, message);
 	}
 	
@@ -35,7 +32,7 @@ public class MessageController {
 			@PathVariable("platform") String platform,
 			@PathVariable("channel") String channel,
 			@RequestBody Message message
-	) throws GeneralSecurityException, IOException {
+	) {
 		return messageService.sendMessage("channel", platform, channel, message);
 	}
 }

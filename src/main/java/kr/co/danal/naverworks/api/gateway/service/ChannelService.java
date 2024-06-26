@@ -1,9 +1,10 @@
 package kr.co.danal.naverworks.api.gateway.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
+import kr.co.danal.naverworks.api.gateway.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +43,7 @@ public class ChannelService {
     }
 
     @PreDestroy
-    public void saveChannels() throws IOException {
+    public void saveChannels() {
         try {
             File file = new File(channelsFilePath);
             if (!file.exists()) {
@@ -50,8 +51,7 @@ public class ChannelService {
             }
             objectMapper.writeValue(file, channels);
         } catch (IOException e) {
-            log.error("Failed to save channels!", e);
-            throw e;
+            throw new RuntimeException("Failed to save channels because of file I/O.", e);
         }
     }
 
@@ -59,17 +59,37 @@ public class ChannelService {
         return channels.get(channel);
     }
 
-    public void addOrUpdateChannel(String channel, String channelId) throws IOException {
+    public void addChannel(MessageEvent messageEvent, String channel, String channelId) {
+        if (channels.containsKey(channel)) {
+            messageEvent.setAdditionalText(StringUtils.concat("Failed! ", channel, " already exists."));
+            return;
+        }
         channels.put(channel, channelId);
         saveChannels();
+        messageEvent.setAdditionalText(StringUtils.concat("Success! ", channel, " registration completed."));
     }
 
-    public void removeChannel(String channelId) throws IOException {
-        channels.remove(channelId);
+    public void updateChannel(MessageEvent messageEvent, String channel, String channelId) {
+        if (!channels.containsKey(channel)) {
+            messageEvent.setAdditionalText(StringUtils.concat("Failed! ", channel, " doesn't exist."));
+            return;
+        }
+        channels.put(channel, channelId);
         saveChannels();
+        messageEvent.setAdditionalText(StringUtils.concat("Success! ", channel, " registration completed."));
     }
 
-    public String getChannelsToPrettyJson() throws JsonProcessingException {
+    public void removeChannel(MessageEvent messageEvent, String channel) {
+        if (!channels.containsKey(channel)) {
+            messageEvent.setAdditionalText(StringUtils.concat("Failed! ", channel, " doesn't exist."));
+            return;
+        }
+        channels.remove(channel);
+        saveChannels();
+        messageEvent.setAdditionalText(StringUtils.concat("Success! ", channel, " deletion completed."));
+    }
+
+    public String getChannelsToPrettyJson() {
         StringJoiner joiner = new StringJoiner(",\n", "{\n", "\n}");
         channels.forEach((key, value) -> joiner.add("  \"" + key + "\": \"" + value + "\""));
         return joiner.toString();

@@ -10,6 +10,6 @@ public class NaverWorksApiGatewayApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NaverWorksApiGatewayApplication.class, args);
-        log.info("NaverWorks API Gateway is running!");
+        log.info("NaverWorks API Gateway is running successfully!");
     }
 }

@@ -52,4 +52,6 @@ import lombok.NoArgsConstructor;
 			@JsonProperty("text")
 			private String text;
 		}
+
+		private String additionalText;
 	}

@@ -19,42 +19,44 @@ url:
 bot:
   privatekey: |
     -----BEGIN PRIVATE KEY-----
-    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC6TbAZanbXk3e7
-    AMZXk/c7ZYmS7gAEyV3JFtbUFM1JghPM7+6GCDT5l127zrZGfkwZ1dZdqZiN8L8Q
-    sP3inzkyzZBtwceI493Q6nnWaweL3wRl4kMZqJ6gvS4hpsORnTkKNRXaysXI011u
-    yL6c5/gH5qyHodeDuN5ndnwEkaF265NYfFZe6H+4p1Erfci+eSVwRT4Xp6FT5f+0
-    bbDUfY8HuozH4h2qbyFlXOwFiGyGIVLSOe4QGFetoqtwqPKg0ovm1m+gBtWWuZmS
-    Bvq44Uv/wkynNgGl+NdGXBfLzWWzFHjbWsBJ0ZN0k/sdpxac+sEmaTZOFHJaev8/
-    Q5O4EdJrAgMBAAECggEAFii1YGCEYCG/JPPzo2kLB/qMwXgjcm5NBGT+Cl2rCSo6
-    lq6XDUQeoO07DeKJVZsiDBSeGafZaFCROTgECpdrozpGCnf49rQ7puSsty8lx6Iw
-    ELo3xu6CZ5X4zbHbIw+zQB6OSebCXZ+eRlYELf99RdtO/Bbo3lb3xRCXsadssAsi
-    gCNlKcXpkbQskmRNVXMT8C6aUStQp84BGkd/eEXSh1E4TcRozoQe1MvCquyIDVgK
-    gqBNeU6AVw4gzriTOkbfbyEYcrSQGPtpfvXJbl08Cb73cEy4zl5CuwXpKimQuUUU
-    efjKca0eK49bjtM9peahC/Zxp2RYfyJfNSppVcw8iQKBgQD+F0Xf/PTOPFcm0kyB
-    VGuhoV0/0x9Ms+Uv65nowv+ZicGg5M9YVGik48Ct1FD283uiQehrzQkGpdJdUkrc
-    fD+AlvJt5PmYFTi2onTFzr8xq7uBvRhrUbr/U6SJ27BmWlKHV65U5aV3JYcNp5jQ
-    Av8/BxffKjUHkVsHJgqmefUMPwKBgQC7tAfAd7kw9NE5RdHy68vaExFKob+9c4v/
-    TAJ1JqHk5wpwPSrKweEiU3s40QzMgjDHTRCkucAECBgJH5paOnGOJx3rmhx8NyIn
-    26jrkwxhoL6I/iTGqzyXopABzPLl9zEWbTN7sr5kV0bB+RE/szqACKx9Awf66VjG
-    GJP63XDe1QKBgFpS6Zr7MAcUOiLpxRqAaRZ251Al+81nccR8KyUsFHJ/Ht7UF8Ud
-    lGlxMPBaNkHjQgLnDPktVNURI1vbQhNo86YBgsKAEB35BUUfMQWUPjEpDCnNj52u
-    2xuiny4Gc4me+BF2oNk7HXviUkUPW+ot9pBwNBM3zMwY5tP+uPB/EBY/AoGBAI2w
-    XXWlKm9RLqp8EPq9kfkBEblzleht040YlHZYfjbrTM7i7W12ovqlZ8vAyleKI0Ye
-    32RpLxAcCADDEWHw4g07a/OQNtZxS+AoiT+ileMQUyPYLGynkCqqtOgXDHgZe72B
-    Gy7SA7R8yVXdLG8YXR2O7p3Dbv+xq6iFnxbsl6otAoGAbwyJRS7IvooZaXWFBpi+
-    BQX+snnsWZPQmtvhyFGnxWnDPtr7QCYKi65dt5bMG48d1+mHMiwt8GtcRiSO7pek
-    N3gN7ribQH9nZKObeHh9P6JkveLp2sGHgeENlVpzym+BjjyUSzbUACMutibYbkwc
-    UoxPfe2dncPS90PFgZTyCRs=
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCrdJNJKh5AGV9M
+    Jr1xiKKxaenG/ARymXxFdpWi+Mz0pGJsat3gdJeE07m4S3zWbZ0m2E5CifJ8mZwU
+    6KsPzcKtqxMDn6T66119S9fWXTBy/ypTsjSbyhecpk9T1T55YZ7WwyKUjAw3jQFJ
+    fP4i0yQEWvRR9bs3aieHhhTbl/FhWSKDAAfZKvL3BmybO9rsObUSqWlN2q86o8YR
+    oDVZVQvHf/83pBzyLP2INRG8XQScFGnAsHnu2l2hQR1u5SJS92s5ZnJDR+UmyxhT
+    l8aLPxx5wDp/hDs3YhGo89/EWL7xd1FZieRx8NXPezReIloRprJIbNOUvE0OE+mC
+    ktHAtJD7AgMBAAECggEAFztEebVrQ+QsNXVKVgfdg4yGUJ/1OlHxtLfMrrhnjP55
+    F5ejWLZzkVve3kncMHHJyWmlsP5gDOIDdBHSm+GVb1Ku0N7gy974W/Ha3QDjf7Fz
+    WsPavQE1EdS3CvTp8ih4DUGDff076osAkaSOCsnxJ2XrlO9m3qtTj9lrGhYMbtQb
+    w1ycfzYVmJviitaSuf0bsFluXce3MWCkG3udM11XkT3A0vybZvzOL40JDo4MYj35
+    nQHdzJBakaLMqHs/NReK3WuNUXBgKVw/FSaTqBVCczXFeBqvF7cVA5PILRmlgwt8
+    4xtPRYsAdpAgvoVk3MpfwWQk+Qu5enHv7nYjFRpZAQKBgQDvHj1tUzSMn51uOtLN
+    uKYDxHfDK/e9aii7RtJg42HCqWsuMYuslUoGrUHWDfvxuQpML8H31kPAnX7WpYPR
+    zQvhYw7IPz9ya69ujhT20OrVg29LJHWL+fWOPvK/X8pVjyayuUZ6RqQB0pZqdq/S
+    UheOPnMr6NzS/uCEfa7ODpC6GQKBgQC3j2qBvFEhMJ8Z28P9gJzBD8asYdOUYKEr
+    MTZJMHULz4N1rDk8Iv4HkNMob3FdJD1vWqIWqtyE+MO1oBmY7m6JsbfCFozItMED
+    N0eEHqCK/BNWRzf9lc7bNSrDMU3CgLq2MNzyN3U+9JLvTiG2Rc7k99+kD/JQ1Eqe
+    qk77h8cuMwKBgQCcHq1ShMHJkqkyABwEjyttSEg9WKaeuAIyDBJtiegZNY4yEc00
+    +B/l7hcPEABQGVVc2s2U6ANCblITCOvg/jRkis1q9siRBzf6Qa/0WgEJOJBgikRp
+    COFHZ1gMlRlA9X75r7gRO6/3NKxahHVVJ54TlDiUEayj4h9qwbhw9teNeQKBgFY2
+    oOKQTVaWXJOrmZDuIDG5NCnwxIwzGl+L/KBBhyfl7iuNmVA6ay+ogNTECu2hQM2V
+    Nv4IgAxgPqOGr58ZlYdMli8toi/+XY0iII/YRrUgkgB68LxE6WQhw5TsCkapaYh6
+    yLtm+sV3369P9huDDBqUpVCMQNZf7zA4c2JGMnHrAoGAKU9VfnS+wyyH8xOu1XG1
+    C0c19H3DNQa/SopiT4Dr+dXcVpLGDg/4RKh1hFbfsXaH7WiPSr+1AQW+syyXT/sH
+    pa0s4bD3IdogBj4r2yoAdvgSebE5+9EBl46s0S2TY8Gvc6+/ExQBEPUvid4XW57z
+    GeWpOx+foGRV/csMvxNlMwg=
     -----END PRIVATE KEY-----
-  client-id: 7eWUj0HqbhSzhkPR8URA
-  client-secret: KHsyhhkIzY
-  service-account: qdhxo.serviceaccount@danal2.by-works.com
+  client-id: vcLxZndZyYDwtBuTvxuC
+  client-secret: MXmguprU1i
+  service-account: a7vcu.serviceaccount@danal3.by-works.com
   scope: audit audit.read board board.read bot bot.read calendar calendar.read contact contact.read directory directory.read group group.read orgunit orgunit.read user user.read
   ids:
-    jira: 7996225
-    confluence: 7996226
-    github: 7996227
-    channel: 8076239
+    jira: 8158823
+    confluence: 8158825
+    github: 8158826
+    figma: 8158827
+    channelbot: 8158822
+    service: 8158828
 
 channels:
   file:
@@ -89,3 +91,12 @@ channels:
                   "text": "테스트트트트기술전략"
               }
           }
+
+positions:
+  managers:
+    - 1f2f893b-d92e-4e8f-8a7a-03b964313a35 #회장
+    - 186db028-f97d-4f04-8a03-03e6a3a93b65 #대표이사
+    - eb29a0e4-f774-45cd-843e-03a299889349 #본부장
+    - 07f24c19-3ee8-4388-8d64-0307e1c2ae2b #실장
+    - b630639a-c78e-47c5-8cd9-034a846c0bcb #팀장
+    #- team-member: f9b32064-87c0-4c00-8c81-03d065d8d987 #팀원

@@ -2,7 +2,7 @@ package kr.co.danal.naverworks.api.gateway.service;
 
 import kr.co.danal.naverworks.api.gateway.model.Message;
 import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
-import kr.co.danal.naverworks.api.gateway.model.ResponseData;
+import kr.co.danal.naverworks.api.gateway.util.ClientUtils;
 import kr.co.danal.naverworks.api.gateway.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,15 +10,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MessageEventService {
+public class ChannelBotService {
 
-    private final WebClient webClient;
+    private final ClientUtils clientUtils;
+    private final PositionsService positionsService;
 
     @Value("${channels.message.start:please enter}")
     private String startMessage;
@@ -26,14 +26,9 @@ public class MessageEventService {
     @Value("${channels.message.guide:write guide}")
     private String guideMessage;
 
-    public Mono<ResponseEntity<ResponseData>> forwardRequest(MessageEvent messageEvent) {
+    public Mono<ResponseEntity<Object>> forwardRequest(MessageEvent messageEvent) {
         String uri = getUriByMessageEvent(messageEvent);
-
-        return webClient.post()
-                .uri(uri)
-                .body(Mono.just(messageEvent), MessageEvent.class)
-                .retrieve()
-                .toEntity(ResponseData.class);
+        return clientUtils.post(uri, messageEvent);
     }
 
     public String getUriByMessageEvent(MessageEvent messageEvent) {
@@ -41,10 +36,20 @@ public class MessageEventService {
         String type = MessageUtils.getPartByLocation(message, 0);
         String channel = MessageUtils.getPartByLocation(message, 1);
         String channelId = MessageUtils.getPartByLocation(message, 2);
-        String uri = "";
+        String uri;
+        String userId = messageEvent.getSource().getUserId();
 
         if (!isValidParams(type, channel, channelId)) {
+            log.error("Invalid parameters! type={}, channel={}, channelId={}", type, channel, channelId);
             uri = "/channels/error";
+            messageEvent.setAdditionalText("Invalid parameters! Please check the command.");
+            return uri;
+        };
+
+        if (!isValidPermission(type, userId)) {
+            log.error("Invalid permission! type={}, userID={}", type, userId);
+            uri = "/channels/error";
+            messageEvent.setAdditionalText("Invalid permission! Please ask the manager level.");
             return uri;
         };
 
@@ -67,6 +72,8 @@ public class MessageEventService {
             case "guide":
                 uri = "/channels/guide";
                 break;
+            default:
+                uri = "/channels/error";
         }
         return uri;
     }
@@ -93,6 +100,21 @@ public class MessageEventService {
         return isValid;
     }
 
+    public boolean isValidPermission(String type, String userId) {
+        boolean isValid;
+        switch (type) {
+            case "start", "시작하기", "get", "guide":
+                isValid = true;
+                break;
+            case "add", "update", "delete":
+                isValid = positionsService.isManagerPosition(userId);
+                break;
+            default:
+                isValid = false;
+        }
+        return isValid;
+    }
+
     public String getStartMessage() {
         return startMessage;
     }
@@ -101,18 +123,14 @@ public class MessageEventService {
         return guideMessage;
     }
 
-    public Mono<ResponseEntity<ResponseData>> sendMessage(MessageEvent messageEvent, String text) {
-        String uri = "/message/channel/users/" + messageEvent.getSource().getUserId();
+    public Mono<ResponseEntity<Object>> sendMessage(MessageEvent messageEvent, String text) {
+        String uri = "/message/channelbot/users/" + messageEvent.getSource().getUserId();
         Message message = Message.builder()
                 .content(Message.Content.builder()
                         .type("text")
                         .text(text).build())
                 .build();
 
-        return webClient.post()
-                .uri(uri)
-                .body(Mono.just(message), Message.class)
-                .retrieve()
-                .toEntity(ResponseData.class);
+        return clientUtils.post(uri, message);
     }
 }

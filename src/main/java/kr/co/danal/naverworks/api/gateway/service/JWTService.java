@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.annotation.PostConstruct;
 import kr.co.danal.naverworks.api.gateway.config.BotConfig;
 import kr.co.danal.naverworks.api.gateway.model.TokenInfo;
-import kr.co.danal.naverworks.api.gateway.util.ClientUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +12,18 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -33,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class JWTService {
 
-	private final ClientUtils worksClient;
+	private final WebClient webClient;
 	private final BotConfig botConfig;
 	private final Duration gracePeriod = Duration.ofMinutes(60); // NaverWorks 토큰 유효 기간(24시간)을 고려하여 1시간으로 설정
 	private final ConcurrentHashMap<String, String> tokenCache = new ConcurrentHashMap<>();
@@ -45,7 +52,7 @@ public class JWTService {
 		refreshToken();
 	}
 
-	public String getServerToken() throws IOException, GeneralSecurityException {
+	public String getServerToken() {
 		if (tokenExpirationDate != null && new Date().before(tokenExpirationDate)) {
 			// 토큰이 유효하다면 캐시된 토큰 반환
 			return tokenCache.get("access_token");
@@ -59,20 +66,14 @@ public class JWTService {
 		if (tokenExpirationDate != null && new Date().before(tokenExpirationDate)) {
 			return tokenCache.get("access_token");
 		} else {
-			try {
-				TokenInfo tokenInfo = getServerToken(botConfig.getPrivateKey(), botConfig.getClientId(), botConfig.getClientSecret(), botConfig.getServiceAccount(), botConfig.getScope());
-				String accessToken = tokenInfo.getAccessToken();
-				tokenCache.put("access_token", accessToken);
-
-				Duration expiresInDuration = Duration.ofSeconds(tokenInfo.getExpiresIn());
-				// 현재 시간에서 expiresIn 기간을 더하고 1분(60s)을 뺀 시간 계산
-				Instant expirationInstant = Instant.now().plus(expiresInDuration).minus(gracePeriod);
-				tokenExpirationDate = Date.from(expirationInstant);
-
-				return accessToken;
-			} catch (IOException | GeneralSecurityException e) {
-				throw new RuntimeException("Error refreshing token", e);
-			}
+			TokenInfo tokenInfo = getServerToken(botConfig.getPrivateKey(), botConfig.getClientId(), botConfig.getClientSecret(), botConfig.getServiceAccount(), botConfig.getScope());
+			String accessToken = tokenInfo.getAccessToken();
+			tokenCache.put("access_token", accessToken);
+			Duration expiresInDuration = Duration.ofSeconds(tokenInfo.getExpiresIn());
+			// 현재 시간에서 expiresIn 기간을 더하고 1분(60s)을 뺀 시간 계산
+			Instant expirationInstant = Instant.now().plus(expiresInDuration).minus(gracePeriod);
+			tokenExpirationDate = Date.from(expirationInstant);
+			return accessToken;
 		}
 	}
 	
@@ -88,18 +89,29 @@ public class JWTService {
 	 * @throws GeneralSecurityException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public TokenInfo getServerToken(String serverPrivateKey, String clientId, String clientSecret, String serviceAccount, String scope) throws IOException, GeneralSecurityException {
-		
+	public TokenInfo getServerToken(String serverPrivateKey, String clientId, String clientSecret, String serviceAccount, String scope) {
 		Map<String, Object> headers = new HashMap<String, Object>();
 		headers.put("alg", "RS256");
 		headers.put("typ", "JWT");
 		Date issueDate = new Date();
 		Date expireDate = DateUtils.addMinutes(new Date(), 30);
-		String grantType = URLEncoder.encode("urn:ietf:params:oauth:grant-type:jwt-bearer", "UTF-8");
-		
+		String grantType;
+		try {
+			grantType = URLEncoder.encode("urn:ietf:params:oauth:grant-type:jwt-bearer", "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("Token encoding failed. Check the encoding method.", e);
+		}
+
 		//RSA
 		RSAPublicKey publicKey = null;//Get the key instance
-		RSAPrivateKey privateKey = getPrivateKeyFromString(serverPrivateKey);
+		RSAPrivateKey privateKey;
+		try {
+			privateKey = getPrivateKeyFromString(serverPrivateKey);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to retrieve private key from string because of file I/O.", e);
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException("Failed to retrieve private key from string because of security issues.", e);
+		}
 		Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
 		
 		String assertion = JWT.create()
@@ -118,7 +130,7 @@ public class JWTService {
 		params.add(new BasicNameValuePair("client_secret", clientSecret));
 		params.add(new BasicNameValuePair("scope", scope));
 
-		TokenInfo tokenInfo = worksClient.postByFormUrlencoded("https://auth.worksmobile.com/oauth2/v2.0/token", params)
+		TokenInfo tokenInfo = postByFormUrlencoded("https://auth.worksmobile.com/oauth2/v2.0/token", params)
 				.flatMap(content -> {
 					try {
 						return Mono.just(new ObjectMapper().convertValue(content.getBody(), TokenInfo.class));
@@ -158,5 +170,29 @@ public class JWTService {
 	    RSAPrivateKey privateKey = (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
 	    
 	    return privateKey;
+	}
+
+	/**
+	 * Post 전송 - FormUrlencoded 형, accesstoken 발급 받을 때 사용함
+	 * @param uri
+	 * @param params
+	 * @return
+	 */
+	public Mono<ResponseEntity<Object>> postByFormUrlencoded(String uri, List<NameValuePair> params) {
+		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+		for (NameValuePair param : params) {
+			formData.add(param.getName(), param.getValue());
+		}
+
+		return webClient.post()
+				.uri(uri)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+				.body(BodyInserters.fromFormData(formData))
+				.retrieve()
+				.toEntity(Object.class)
+				.doOnNext(response -> log.info("\n[WebClient One-line]\nRequest: method=post, uri={}, params={}\nResponse: satus={}, headers={}, body={}",
+						uri, params, response.getStatusCode(), response.getHeaders(), response.getBody()))
+				.doOnError(e -> log.error("\n[WebClient One-line]\nRequest: method=post, uri={}, params={}\nException:{}",
+						uri, params, e.getMessage(), e));
 	}
 }

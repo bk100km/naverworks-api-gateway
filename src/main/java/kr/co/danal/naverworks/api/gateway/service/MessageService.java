@@ -11,15 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageService {
 
-    private final JWTService jwtService;
     private final ChannelService channelService;
     private final ClientUtils clientUtils;
     private final BotConfig botConfig;
@@ -27,9 +23,7 @@ public class MessageService {
     @Value("${url.naverworks:https://www.worksapis.com/v1.0}")
     private String naverworksUrl;
 
-    public Mono<ResponseEntity<Object>> sendMessage(String type, String platform, String target, Message message)
-            throws GeneralSecurityException, IOException {
-        String token = jwtService.getServerToken();
+    public Mono<ResponseEntity<Object>> sendMessage(String type, String platform, String target, Message message) {
         String url = "";
         String botId = botConfig.getBotIdbyPlatform(platform);
 
@@ -42,6 +36,6 @@ public class MessageService {
                 url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/channels/", channelId, "/messages");
                 break;
         }
-        return clientUtils.post(token, url, message);
+        return clientUtils.post(url, message);
     }
 }
