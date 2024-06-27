@@ -7,10 +7,12 @@ server:
 
 logging:
   level:
-    root: INFO
-    org.springframework.web: INFO
-    org.springframework.cloud.gateway: INFO
+    root: DEBUG
+    org.springframework.web: DEBUG
     kr.co.danal.naverworks.api.gateway: DEBUG
+  file:
+    #path: /home/operators/wasd/chanho/naverworks-api-gateway/logs #서버
+    path: C:\Users\bk100\logs #로컬
 
 url:
   base-url: http://localhost:8080
@@ -60,7 +62,8 @@ bot:
 
 channels:
   file:
-    path: src/main/resources/channels.json
+    #path: /home/operators/wasd/chanho/naverworks-api-gateway/channels.json #서버
+    path: src/main/resources/channels.json #로컬
   message:
     start: |
       안녕하세요 채널관리봇입니다 :)
