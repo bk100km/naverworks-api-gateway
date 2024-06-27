@@ -34,7 +34,8 @@ public class LoggingFilter implements WebFilter {
                     dataBuffer.read(bytes);
                     DataBufferUtils.release(dataBuffer);
                     String requestBody = new String(bytes, StandardCharsets.UTF_8);
-                    log.info("Request: method={}, uri={}, headers={}, body={}",
+                    log.info("\nRequest: ip={}, method={}, uri={}, headers={}, body={}",
+                            getClientIP(originalRequest),
                             originalRequest.getMethod(),
                             originalRequest.getURI(),
                             originalRequest.getHeaders(),
@@ -98,7 +99,8 @@ public class LoggingFilter implements WebFilter {
                         dataBuffer.read(responseBytes);
                         DataBufferUtils.release(dataBuffer);
                         String responseBody = new String(responseBytes, StandardCharsets.UTF_8);
-                        log.info("\n[One-line]\nRequest: method={}, uri={}, headers={}, body={}\nResponse: status={}, headers={}, body={}",
+                        log.info("\n[One-line]\nRequest: ip={}, method={}, uri={}, headers={}, body={}\nResponse: status={}, headers={}, body={}",
+                                getClientIP(originalRequest),
                                 originalRequest.getMethod(),
                                 originalRequest.getURI(),
                                 originalRequest.getHeaders(),
@@ -120,4 +122,19 @@ public class LoggingFilter implements WebFilter {
             return writeWith(Flux.from(body).flatMapSequential(p -> p));
         }
     }
+
+    private String getClientIP(ServerHttpRequest request) {
+        String ip = request.getHeaders().getFirst("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // X-Forwarded-For can contain multiple IPs, so take the first one.
+            return ip.split(",")[0].trim();
+        }
+        ip = request.getHeaders().getFirst("X-Real-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+        // Fallback to remote address.
+        return request.getRemoteAddress() != null ? request.getRemoteAddress().getAddress().getHostAddress() : "unknown";
+    }
+
 }

@@ -5,15 +5,6 @@ spring:
 server:
   port: 8080
 
-logging:
-  level:
-    root: DEBUG
-    org.springframework.web: DEBUG
-    kr.co.danal.naverworks.api.gateway: DEBUG
-  file:
-    #path: /home/operators/wasd/chanho/naverworks-api-gateway/logs #서버
-    path: C:\Users\bk100\logs #로컬
-
 url:
   base-url: http://localhost:8080
   naverworks: https://www.worksapis.com/v1.0
