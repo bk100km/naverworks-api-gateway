@@ -1,6 +1,6 @@
 package kr.co.danal.naverworks.api.gateway.controller;
 
-import kr.co.danal.naverworks.api.gateway.model.Message;
+import kr.co.danal.naverworks.api.gateway.service.ChannelService;
 import kr.co.danal.naverworks.api.gateway.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,15 +15,16 @@ import reactor.core.publisher.Mono;
 public class MessageController {
 
 	private final MessageService messageService;
+	private final ChannelService channelService;
 
 	//사용자 대상 메세지 전송
 	@PostMapping("/{platform}/users/{userId}")
 	public Mono<ResponseEntity<Object>> messageForUser(
 			@PathVariable("platform") String platform,
 			@PathVariable("userId") String userId,
-			@RequestBody Message message
+			@RequestBody String text
 	) {
-		return messageService.sendMessage("user", platform, userId, message);
+		return messageService.sendMessage("user", platform, userId, text);
 	}
 	
 	//채널 대상 메세지 전송
@@ -31,8 +32,8 @@ public class MessageController {
 	public Mono<ResponseEntity<Object>> messageForChannel(
 			@PathVariable("platform") String platform,
 			@PathVariable("channel") String channel,
-			@RequestBody Message message
+			@RequestBody String text
 	) {
-		return messageService.sendMessage("channel", platform, channel, message);
+		return messageService.sendMessage("channel", platform, channelService.getChannelIdByChannel(channel), text);
 	}
 }

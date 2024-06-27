@@ -1,6 +1,5 @@
 package kr.co.danal.naverworks.api.gateway.service;
 
-import kr.co.danal.naverworks.api.gateway.model.Message;
 import kr.co.danal.naverworks.api.gateway.model.MessageEvent;
 import kr.co.danal.naverworks.api.gateway.util.ClientUtils;
 import kr.co.danal.naverworks.api.gateway.util.MessageUtils;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -19,6 +19,10 @@ public class ChannelBotService {
 
     private final ClientUtils clientUtils;
     private final PositionsService positionsService;
+    private final MessageService messageService;
+
+    private final String MESSAGE_TYPE = "user";
+    private final String MESSAGE_PLATFORM = "channelbot";
 
     @Value("${channels.message.start:please enter}")
     private String startMessage;
@@ -50,6 +54,13 @@ public class ChannelBotService {
             log.error("Invalid permission! type={}, userID={}", type, userId);
             uri = "/channels/error";
             messageEvent.setAdditionalText("Invalid permission! Please ask the manager level.");
+            return uri;
+        };
+
+        if (StringUtils.equals(type, "add") && !isValidChannelId(channelId)) {
+            log.error("Invalid channelId! channelId={}", channelId);
+            uri = "/channels/error";
+            messageEvent.setAdditionalText("Invalid channel ID! Please check the channel ID.");
             return uri;
         };
 
@@ -115,6 +126,16 @@ public class ChannelBotService {
         return isValid;
     }
 
+    public boolean isValidChannelId(String channelId) {
+        boolean result = true;
+        String testMessage = "Channel registration test.";
+        HttpStatusCode status = messageService.sendMessageByChannelId("channelbot", channelId, testMessage).block().getStatusCode();
+        if (status.is4xxClientError()) {
+            result = false;
+        }
+        return result;
+    }
+
     public String getStartMessage() {
         return startMessage;
     }
@@ -123,14 +144,7 @@ public class ChannelBotService {
         return guideMessage;
     }
 
-    public Mono<ResponseEntity<Object>> sendMessage(MessageEvent messageEvent, String text) {
-        String uri = "/message/channelbot/users/" + messageEvent.getSource().getUserId();
-        Message message = Message.builder()
-                .content(Message.Content.builder()
-                        .type("text")
-                        .text(text).build())
-                .build();
-
-        return clientUtils.post(uri, message);
+    public Mono<ResponseEntity<Object>> sendBotResponseMessage(MessageEvent messageEvent, String text) {
+        return messageService.sendMessage(MESSAGE_TYPE, MESSAGE_PLATFORM, messageEvent.getSource().getUserId(), text);
     }
 }

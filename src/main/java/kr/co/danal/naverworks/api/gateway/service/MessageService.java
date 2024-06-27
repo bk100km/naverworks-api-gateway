@@ -16,26 +16,40 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class MessageService {
 
-    private final ChannelService channelService;
     private final ClientUtils clientUtils;
     private final BotConfig botConfig;
 
     @Value("${url.naverworks:https://www.worksapis.com/v1.0}")
     private String naverworksUrl;
 
-    public Mono<ResponseEntity<Object>> sendMessage(String type, String platform, String target, Message message) {
+    public Mono<ResponseEntity<Object>> sendMessage(String type, String platform, String target, String text) {
         String url = "";
         String botId = botConfig.getBotIdbyPlatform(platform);
+        Message message = Message.builder()
+                .content(Message.Content.builder()
+                        .type("text")
+                        .text(text).build())
+                .build();
 
         switch (type) {
             case "user":
                 url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/users/", target, "/messages");
                 break;
             case "channel":
-                String channelId = channelService.getChannelIdByChannel(target);
-                url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/channels/", channelId, "/messages");
+                url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/channels/", target, "/messages");
                 break;
         }
+        return clientUtils.post(url, message);
+    }
+
+    public Mono<ResponseEntity<Object>> sendMessageByChannelId(String platform, String channelId, String text) {
+        String botId = botConfig.getBotIdbyPlatform(platform);
+        Message message = Message.builder()
+                .content(Message.Content.builder()
+                        .type("text")
+                        .text(text).build())
+                .build();
+        String url = StringUtils.concat(naverworksUrl, "/bots/", botId, "/channels/", channelId, "/messages");
         return clientUtils.post(url, message);
     }
 }

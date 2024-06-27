@@ -1,6 +1,8 @@
 spring:
   main:
     web-application-type: reactive
+  config:
+    import: classpath:business.yml
 
 server:
   port: 8080
@@ -8,89 +10,3 @@ server:
 url:
   base-url: http://localhost:8080
   naverworks: https://www.worksapis.com/v1.0
-
-bot:
-  privatekey: |
-    -----BEGIN PRIVATE KEY-----
-    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCrdJNJKh5AGV9M
-    Jr1xiKKxaenG/ARymXxFdpWi+Mz0pGJsat3gdJeE07m4S3zWbZ0m2E5CifJ8mZwU
-    6KsPzcKtqxMDn6T66119S9fWXTBy/ypTsjSbyhecpk9T1T55YZ7WwyKUjAw3jQFJ
-    fP4i0yQEWvRR9bs3aieHhhTbl/FhWSKDAAfZKvL3BmybO9rsObUSqWlN2q86o8YR
-    oDVZVQvHf/83pBzyLP2INRG8XQScFGnAsHnu2l2hQR1u5SJS92s5ZnJDR+UmyxhT
-    l8aLPxx5wDp/hDs3YhGo89/EWL7xd1FZieRx8NXPezReIloRprJIbNOUvE0OE+mC
-    ktHAtJD7AgMBAAECggEAFztEebVrQ+QsNXVKVgfdg4yGUJ/1OlHxtLfMrrhnjP55
-    F5ejWLZzkVve3kncMHHJyWmlsP5gDOIDdBHSm+GVb1Ku0N7gy974W/Ha3QDjf7Fz
-    WsPavQE1EdS3CvTp8ih4DUGDff076osAkaSOCsnxJ2XrlO9m3qtTj9lrGhYMbtQb
-    w1ycfzYVmJviitaSuf0bsFluXce3MWCkG3udM11XkT3A0vybZvzOL40JDo4MYj35
-    nQHdzJBakaLMqHs/NReK3WuNUXBgKVw/FSaTqBVCczXFeBqvF7cVA5PILRmlgwt8
-    4xtPRYsAdpAgvoVk3MpfwWQk+Qu5enHv7nYjFRpZAQKBgQDvHj1tUzSMn51uOtLN
-    uKYDxHfDK/e9aii7RtJg42HCqWsuMYuslUoGrUHWDfvxuQpML8H31kPAnX7WpYPR
-    zQvhYw7IPz9ya69ujhT20OrVg29LJHWL+fWOPvK/X8pVjyayuUZ6RqQB0pZqdq/S
-    UheOPnMr6NzS/uCEfa7ODpC6GQKBgQC3j2qBvFEhMJ8Z28P9gJzBD8asYdOUYKEr
-    MTZJMHULz4N1rDk8Iv4HkNMob3FdJD1vWqIWqtyE+MO1oBmY7m6JsbfCFozItMED
-    N0eEHqCK/BNWRzf9lc7bNSrDMU3CgLq2MNzyN3U+9JLvTiG2Rc7k99+kD/JQ1Eqe
-    qk77h8cuMwKBgQCcHq1ShMHJkqkyABwEjyttSEg9WKaeuAIyDBJtiegZNY4yEc00
-    +B/l7hcPEABQGVVc2s2U6ANCblITCOvg/jRkis1q9siRBzf6Qa/0WgEJOJBgikRp
-    COFHZ1gMlRlA9X75r7gRO6/3NKxahHVVJ54TlDiUEayj4h9qwbhw9teNeQKBgFY2
-    oOKQTVaWXJOrmZDuIDG5NCnwxIwzGl+L/KBBhyfl7iuNmVA6ay+ogNTECu2hQM2V
-    Nv4IgAxgPqOGr58ZlYdMli8toi/+XY0iII/YRrUgkgB68LxE6WQhw5TsCkapaYh6
-    yLtm+sV3369P9huDDBqUpVCMQNZf7zA4c2JGMnHrAoGAKU9VfnS+wyyH8xOu1XG1
-    C0c19H3DNQa/SopiT4Dr+dXcVpLGDg/4RKh1hFbfsXaH7WiPSr+1AQW+syyXT/sH
-    pa0s4bD3IdogBj4r2yoAdvgSebE5+9EBl46s0S2TY8Gvc6+/ExQBEPUvid4XW57z
-    GeWpOx+foGRV/csMvxNlMwg=
-    -----END PRIVATE KEY-----
-  client-id: vcLxZndZyYDwtBuTvxuC
-  client-secret: MXmguprU1i
-  service-account: a7vcu.serviceaccount@danal3.by-works.com
-  scope: audit audit.read board board.read bot bot.read calendar calendar.read contact contact.read directory directory.read group group.read orgunit orgunit.read user user.read
-  ids:
-    jira: 8158823
-    confluence: 8158825
-    github: 8158826
-    figma: 8158827
-    channelbot: 8158822
-    service: 8158828
-
-channels:
-  file:
-    #path: /home/operators/wasd/chanho/naverworks-api-gateway/channels.json #서버
-    path: src/main/resources/channels.json #로컬
-  message:
-    start: |
-      안녕하세요 채널관리봇입니다 :)
-      수행할 명령어를 입력해주세요.
-      
-      1. 등록된 채널 조회
-       : get
-      2. 채널ID 등록하기
-       : add/{채널명}/{채널ID}
-      3. 등록된 채널ID 수정하기
-       : update/{채널명}/{채널ID}
-      4. 등록된 채널ID 삭제하기
-       : delete/{채널명}
-      5. 가이드 보기
-       : guide
-    guide: |
-      1. 등록할 메시지 채널을 클릭하세요. 
-      2. "더보기" -> "채널ID" -> "채널ID 복사"를 클릭하세요.
-      3. 메시지 "새로 만들기" -> "사내 구성원과 대화" -> "Bot" -> "채널관리봇"을 선택하세요.
-      4. "시작하기"를 클릭하고 명령어를 입력하세요. 
-          ex. add/{채널명}/{채널ID}
-      5. 정상적으로 채널이 등록되면, "success" 메시지를 회신해요.
-      6. "http://localhost:8080/message/{platform}/channels/{채널명}"으로 메시지를 발송하세요.
-          * 메시지 형식 참고
-          {
-              "content": {
-                  "type": "text",
-                  "text": "테스트트트트기술전략"
-              }
-          }
-
-positions:
-  managers:
-    - 1f2f893b-d92e-4e8f-8a7a-03b964313a35 #회장
-    - 186db028-f97d-4f04-8a03-03e6a3a93b65 #대표이사
-    - eb29a0e4-f774-45cd-843e-03a299889349 #본부장
-    - 07f24c19-3ee8-4388-8d64-0307e1c2ae2b #실장
-    - b630639a-c78e-47c5-8cd9-034a846c0bcb #팀장
-    #- team-member: f9b32064-87c0-4c00-8c81-03d065d8d987 #팀원

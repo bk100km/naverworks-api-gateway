@@ -27,13 +27,13 @@ public class ChannelsController {
     @PostMapping("/start")
     public Mono<ResponseEntity<Object>> start(
             @RequestBody MessageEvent messageEvent) {
-        return channelBotService.sendMessage(messageEvent, channelBotService.getStartMessage());
+        return channelBotService.sendBotResponseMessage(messageEvent, channelBotService.getStartMessage());
     }
 
     @PostMapping("/get")
     public Mono<ResponseEntity<Object>> get(
             @RequestBody MessageEvent messageEvent) {
-        return channelBotService.sendMessage(messageEvent, channelService.getChannelsToPrettyJson());
+        return channelBotService.sendBotResponseMessage(messageEvent, channelService.getChannelsToPrettyJson());
     }
 
     @RequestMapping(value = {"/add/{channel}/{channelId}"}, method = RequestMethod.POST)
@@ -41,8 +41,7 @@ public class ChannelsController {
             @RequestBody MessageEvent messageEvent,
             @PathVariable String channel,
             @PathVariable String channelId) {
-        channelService.addChannel(messageEvent, channel, channelId);
-        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
+        return channelService.addChannel(messageEvent, channel, channelId);
     }
 
     @RequestMapping(value = {"/update/{channel}/{channelId}"}, method = RequestMethod.POST)
@@ -50,27 +49,25 @@ public class ChannelsController {
             @RequestBody MessageEvent messageEvent,
             @PathVariable String channel,
             @PathVariable String channelId) {
-        channelService.updateChannel(messageEvent, channel, channelId);
-        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
+        return channelService.updateChannel(messageEvent, channel, channelId);
     }
 
     @PostMapping("/delete/{channel}")
     public Mono<ResponseEntity<Object>> delete(
             @RequestBody MessageEvent messageEvent,
             @PathVariable String channel) {
-        channelService.removeChannel(messageEvent, channel);
-        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
+        return channelService.removeChannel(messageEvent, channel);
     }
 
     @PostMapping("/error")
     public Mono<ResponseEntity<Object>> error(
             @RequestBody MessageEvent messageEvent) {
-        return channelBotService.sendMessage(messageEvent, messageEvent.getAdditionalText());
+        return channelBotService.sendBotResponseMessage(messageEvent, messageEvent.getAdditionalText());
     }
 
     @PostMapping("/guide")
     public Mono<ResponseEntity<Object>> guide(
             @RequestBody MessageEvent messageEvent) {
-        return channelBotService.sendMessage(messageEvent, channelBotService.getGuideMessage());
+        return channelBotService.sendBotResponseMessage(messageEvent, channelBotService.getGuideMessage());
     }
 }

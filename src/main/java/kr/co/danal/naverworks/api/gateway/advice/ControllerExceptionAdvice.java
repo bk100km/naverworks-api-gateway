@@ -17,27 +17,27 @@ import reactor.core.publisher.Mono;
 public class ControllerExceptionAdvice {
 
     @ExceptionHandler(Exception.class)
-    public Mono<ResponseEntity<String>> handleAllExceptions(Exception e, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Object>> handleAllExceptions(Exception e, ServerWebExchange exchange) {
         return Mono.just(new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     @ExceptionHandler(HttpServerErrorException.class)
-    public Mono<ResponseEntity<String>> handleHttpServerErrorExceptions(HttpServerErrorException e, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Object>> handleHttpServerErrorExceptions(HttpServerErrorException e, ServerWebExchange exchange) {
         return Mono.just(new ResponseEntity<>(e.getMessage(), e.getStatusCode()));
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
-    public Mono<ResponseEntity<String>> handleHttpClientErrorExceptions(HttpClientErrorException e, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Object>> handleHttpClientErrorExceptions(HttpClientErrorException e, ServerWebExchange exchange) {
         return Mono.just(new ResponseEntity<>(e.getMessage(), e.getStatusCode()));
     }
 
     @ExceptionHandler(WebClientResponseException.class)
-    public Mono<ResponseEntity<String>> handleWebClientResponseException(WebClientResponseException e, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Object>> handleWebClientResponseException(WebClientResponseException e, ServerWebExchange exchange) {
         return Mono.just(new ResponseEntity<>(e.getMessage(), e.getStatusCode()));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public Mono<ResponseEntity<String>> handleResponseStatusException(ResponseStatusException e, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Object>> handleResponseStatusException(ResponseStatusException e, ServerWebExchange exchange) {
         return Mono.just(new ResponseEntity<>(e.getMessage(), e.getStatusCode()));
     }
 }

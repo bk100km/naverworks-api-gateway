@@ -7,9 +7,11 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 @Log4j2
@@ -33,11 +35,20 @@ public class ClientUtils {
 				.retrieve()
 				.onStatus(response -> response.isError(), this::handleErrorResponse)
 				.toEntity(Object.class)
+				.doOnError(e -> {
+					log.error("\n[WebClient One-line]\nRequest: method=get, uri={}, token={}\nException={}",
+							uri, accessToken, e.getMessage(), e);
+				})
 				.doOnNext(response -> log.info("\n[WebClient One-line]\nRequest: method=get, uri={}, token={}\nResponse: satus={}, headers={}, body={}",
 						uri, accessToken, response.getStatusCode(), response.getHeaders(), response.getBody()))
-				.doOnError(e -> log.error("\n[WebClient One-line]\nRequest: method=get, uri={}, token={}\nException={}",
-						uri, accessToken, e.getMessage(), e))
-				.flatMap(responseEntity -> Mono.just(new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK)));
+				.flatMap(responseEntity -> Mono.just(new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK)))
+				.onErrorResume(e -> {
+					if (e instanceof HttpClientErrorException || e instanceof HttpServerErrorException || e instanceof WebClientResponseException) {
+						return Mono.just(new ResponseEntity<>(e.getMessage(), ((RestClientResponseException) e).getStatusCode()));
+					} else {
+						return Mono.just(new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+					}
+				});
 	}
 	
 	/**
@@ -57,11 +68,20 @@ public class ClientUtils {
 				.retrieve()
 				.onStatus(response -> response.isError(), this::handleErrorResponse)
 				.toEntity(Object.class)
+				.doOnError(e -> {
+					log.error("\n[WebClient One-line]\nRequest: method=post, uri={}, token={}, body={}\nException={}",
+							uri, accessToken, data, e.getMessage(), e);
+				})
 				.doOnNext(response -> log.info("\n[WebClient One-line] \nRequest: method=post, uri={}, token={}, body={}\nResponse: satus={}, headers={}, body={}",
 						uri, accessToken, data, response.getStatusCode(), response.getHeaders(), response.getBody()))
-				.doOnError(e -> log.error("\n[WebClient One-line]\nRequest: method=post, uri={}, token={}, body={}\nException={}",
-						uri, accessToken, data, e.getMessage(), e))
-				.flatMap(responseEntity -> Mono.just(new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK)));
+				.flatMap(responseEntity -> Mono.just(new ResponseEntity<>(responseEntity.getBody(), HttpStatus.OK)))
+				.onErrorResume(e -> {
+					if (e instanceof HttpClientErrorException || e instanceof HttpServerErrorException || e instanceof WebClientResponseException) {
+						return Mono.just(new ResponseEntity<>(e.getMessage(), ((RestClientResponseException) e).getStatusCode()));
+					} else {
+						return Mono.just(new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+					}
+				});
 	}
 
 	private Mono<? extends Throwable> handleErrorResponse(ClientResponse response) {
